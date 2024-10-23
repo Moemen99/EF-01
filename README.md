@@ -173,3 +173,112 @@ When working Code First:
 2. Consider the trade-offs between storage, performance, and complexity
 3. Don't automatically accept the default TPC strategy
 4. Test performance with representative data volumes
+
+
+# Entity Framework Core - Advanced Inheritance Mapping Strategies
+
+## Table Per Hierarchy (TPH)
+
+TPH is an alternative to TPC that stores the entire inheritance hierarchy in a single table.
+
+### Single Table Structure
+```mermaid
+erDiagram
+    Employee {
+        int ID PK
+        string Name
+        int Age
+        string Address
+        decimal Salary
+        datetime StartDate
+        decimal HourRate
+        int CountOfHours
+        string Discriminator
+    }
+```
+
+### Key Characteristics
+1. **Discriminator Column**
+   - Automatically added by EF Core
+   - Acts as an enum to identify row type (FullTime/PartTime)
+   - Helps distinguish between different types of employees
+
+2. **Advantages**
+   - Single table for all operations
+   - Simpler querying
+   - Better performance for CRUD operations
+   - No need for table joins
+
+3. **Disadvantages**
+   - NULL values for non-applicable fields
+   - Less efficient storage utilization
+   - Potential for wide tables with many nullable columns
+
+## Table Per Concrete Class (TPCC)
+
+Introduced in 2019, TPCC maps only concrete classes to database tables.
+
+### Database Schema
+```mermaid
+erDiagram
+    FullTimeEmployee {
+        int ID PK
+        string Name
+        int Age
+        string Address
+        decimal Salary
+        datetime StartDate
+    }
+    
+    PartTimeEmployee {
+        int ID PK
+        string Name
+        int Age
+        string Address
+        decimal HourRate
+        int CountOfHours
+    }
+```
+
+### Key Features
+1. **Concrete Classes Only**
+   - Only maps classes with actual business representation
+   - Base/abstract classes (like Employee) are not mapped
+   - Improved storage efficiency
+
+2. **Advantages**
+   - No nullable columns
+   - Clean database design
+   - Better storage efficiency
+   - Single table operations for CRUD
+   - Maps closely to business entities
+
+3. **Use Cases**
+   - When abstract classes are purely for code organization
+   - When storage efficiency is important
+   - When clear separation between types is needed
+
+## Choosing the Right Strategy
+
+### Comparison Matrix
+
+| Feature | TPC | TPH | TPCC |
+|---------|-----|-----|------|
+| Storage Efficiency | Poor | Medium | Good |
+| Query Performance | Poor | Good | Good |
+| NULL Values | No | Yes | No |
+| Table Count | Many | One | Few |
+| Maintenance | Complex | Simple | Medium |
+
+### Database Vendor Support
+- SQL Server
+- MySQL
+- PostgreSQL
+- Other vendors supported by EF Core
+
+### Best Practices
+1. Consider TPCC for new projects
+2. Use TPH when storage isn't a primary concern
+3. Avoid TPC unless specifically required
+4. Test performance with realistic data volumes
+5. Consider the specific requirements of your chosen database vendor
