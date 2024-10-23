@@ -74,3 +74,102 @@ All database operations are performed through C# code:
 - Delete
 
 These operations are written in LINQ and automatically converted to appropriate SQL commands by EF Core.
+
+
+# Entity Framework Core - Inheritance Mapping Strategies
+
+## Understanding Inheritance Mapping
+
+When working with inheritance in Entity Framework Core, the way classes are mapped to database tables significantly impacts application performance and maintainability.
+
+## Class Structure Example
+
+Consider an inheritance hierarchy with employees:
+
+```mermaid
+classDiagram
+    Employee <|-- FullTimeEmployee
+    Employee <|-- PartTimeEmployee
+    
+    class Employee {
+        +ID: int
+        +Name: string
+        +Age: int
+        +Address: string
+    }
+    
+    class FullTimeEmployee {
+        +StartDate: DateTime
+        +Salary: decimal
+    }
+    
+    class PartTimeEmployee {
+        +HourRate: decimal
+        +CountOfHours: int
+    }
+```
+
+## Table Per Class (TPC) Strategy
+
+### Overview
+TPC is the default inheritance mapping strategy in EF Core. With this approach:
+- Each concrete class in the inheritance hierarchy gets its own database table
+- Each table contains columns for all properties (inherited and declared)
+
+### Database Schema with TPC
+```mermaid
+erDiagram
+    Employee {
+        int ID PK
+        string Name
+        int Age
+        string Address
+    }
+    
+    FullTimeEmp {
+        int FullEmpID PK
+        DateTime StartDate
+        decimal Salary
+    }
+    
+    PartTimeEmp {
+        int PartEmpID PK
+        decimal HourRate
+        int CountOfHours
+    }
+```
+
+### Disadvantages of TPC
+
+1. **Data Redundancy**
+   - Common properties are stored in multiple tables
+   - Increases storage requirements
+   - Complicates data maintenance
+
+2. **Performance Impact**
+   - CRUD operations require multiple table access
+   - Creating a new employee requires inserts into multiple tables
+   - Queries often need JOIN operations
+
+3. **Operational Complexity**
+   - Updates and deletes must maintain consistency across tables
+   - More complex query generation
+   - Higher chance of data inconsistency
+
+### When to Avoid TPC
+- In scenarios with deep inheritance hierarchies
+- When performance is a critical requirement
+- When data consistency is paramount
+- In systems with high transaction volumes
+
+### Code First Considerations
+When working Code First:
+- TPC is applied by default
+- Consider carefully whether this is the best approach for your use case
+- Alternative mapping strategies might be more appropriate
+
+## Best Practices
+1. Evaluate inheritance mapping strategy early in design
+2. Consider the trade-offs between storage, performance, and complexity
+3. Don't automatically accept the default TPC strategy
+4. Test performance with representative data volumes
