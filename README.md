@@ -411,3 +411,111 @@ Required NuGet Packages:
    - Unless specifically required
    - Consider only for legacy maintenance
    - Migration path to modern ORMs
+
+
+
+
+
+# Entity Framework Core - Main Concepts Summary
+
+## 1. Mapping (Code Design Tools)
+
+Entity Framework Core provides two primary approaches for mapping between your code and database:
+
+```mermaid
+graph TD
+    A[Mapping Approaches] --> B[Database First]
+    A --> C[Code First]
+    B --> D[Generate Classes from DB]
+    C --> E[Generate DB from Classes]
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+### 1.1 Database First Approach
+- Starts with existing database
+- Generates entity classes from database schema
+- Best for:
+  - Legacy database integration
+  - Complex existing databases
+  - Database-driven development
+
+### 1.2 Code First Approach
+- Starts with C# classes (entities)
+- Generates database tables and views
+- Preferred for:
+  - New projects
+  - Domain-driven design
+  - Greater control over data model
+
+## 2. L2E (LINQ to Entity)
+
+LINQ to Entity provides a way to query your object model using LINQ instead of direct SQL.
+
+### 2.1 Comparison with Traditional Approaches
+
+| Feature | ADO.NET | Entity Framework Core |
+|---------|---------|---------------------|
+| Query Language | Stored Procedures | LINQ (L2E) |
+| SQL Generation | Manual | Automatic |
+| Query Optimization | Manual | Built-in |
+| Database Access | Direct | Abstracted |
+| Code Complexity | Higher | Lower |
+
+### 2.2 CRUD Operations
+
+```mermaid
+graph LR
+    A[Application Code] -->|LINQ| B[EF Core]
+    B -->|Optimized SQL| C[Database]
+    D[ADO.NET] -->|Stored Procedures| C
+```
+
+#### EF Core Approach
+- Write LINQ queries in C#
+- EF Core converts to optimized SQL
+- Automatic query optimization
+- Database-agnostic code
+- Simplified CRUD operations
+
+#### ADO.NET Approach
+- Use stored procedures
+- Direct database interaction
+- Manual SQL optimization
+- Database-specific code
+- More verbose CRUD operations
+
+## Best Practices
+
+### Design Considerations
+1. Choose appropriate mapping strategy
+   - Consider existing infrastructure
+   - Evaluate team expertise
+   - Assess project requirements
+
+2. Query Optimization
+   - Use appropriate LINQ methods
+   - Monitor query performance
+   - Consider Dapper for performance-critical reads
+
+### Implementation Guidelines
+1. Code First:
+   - Use meaningful entity names
+   - Define relationships clearly
+   - Implement proper inheritance strategy (TPH, TPC, TPCC)
+
+2. Database First:
+   - Maintain clean database schema
+   - Use consistent naming conventions
+   - Document complex relationships
+
+3. LINQ to Entity:
+   - Write clean, readable LINQ queries
+   - Avoid N+1 query problems
+   - Use appropriate loading strategies (eager, lazy, explicit)
+
+## Key Benefits
+- ✅ Simplified data access
+- ✅ Reduced development time
+- ✅ Database independence
+- ✅ Automatic SQL optimization
+- ✅ Modern development experience
